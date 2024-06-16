@@ -13,7 +13,10 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
 use Slim\Routing\RouteContext;
-
+require './Middleware/AuthUsuarios.php';
+require './Middleware/AuthProductos.php';
+require './Middleware/AuthMiddleware.php';
+require './Middleware/AuthMesas.php';
 use Dotenv\Dotenv;
 
 require_once '../vendor/autoload.php';
@@ -21,6 +24,7 @@ require_once './controllers/UsuarioController.php';
 require_once './controllers/ProductoController.php';
 require_once './controllers/MesaController.php';
 require_once './controllers/PedidoController.php';
+
 require_once './DataBase/AccesoDatos.php';
 
 // Load ENV
@@ -29,13 +33,15 @@ $dotenv->safeLoad();
 
 
 $app = AppFactory::create();
+$app->addErrorMiddleware(true, true, true);
+$app->addBodyParsingMiddleware();
 
 $app->group('/usuarios', function (RouteCollectorProxy $group) {
     $group->get('[/]', \UsuarioController::class . ':TraerTodos');
     $group->get('/{id_usuario}', \UsuarioController::class . ':TraerUno');
     $group->post('[/]', \UsuarioController::class . ':CargarUno');
-    $group->put('[/]', \UsuarioController::class . ':ModificarUno');
-    $group->delete('[/]', \UsuarioController::class . ':BorrarUno');
+    $group->put('[/]', \UsuarioController::class . ':ModificarUno')->add(\AuthUsuarios::class . ':ValidarCampos');
+    $group->delete('[/]', \UsuarioController::class . ':BorrarUno')->add(new AuthMiddleware("usuario"));
 });
 
 $app->group('/productos', function (RouteCollectorProxy $group) 
@@ -43,17 +49,18 @@ $app->group('/productos', function (RouteCollectorProxy $group)
     $group->get('[/]', \ProductoController::class . ':TraerTodos');
     $group->get('/{id_producto}', \ProductoController::class . ':TraerUno');
     $group->post('[/]', \ProductoController::class . ':CargarUno');
-    $group->put('[/]', \ProductoController::class . ':ModificarUno');
-    $group->delete('[/]', \ProductoController::class . ':BorrarUno');
+    $group->put('[/]', \ProductoController::class . ':ModificarUno')->add(\AuthProductos::class . ':ValidarRol');
+    $group->delete('[/]', \ProductoController::class . ':BorrarUno')->add(\AuthProductos::class . ':ValidarRol');
 });
 
 $app->group('/mesas', function (RouteCollectorProxy $group) 
 {
     $group->get('[/]', \MesaController::class . ':TraerTodos');
     $group->get('/{id_mesa}', \MesaController::class . ':TraerUno');
-    $group->post('[/]', \MesaController::class . ':CargarUno');
-    $group->put('[/]', \MesaController::class . ':ModificarUno');
-    $group->delete('[/]', \MesaController::class . ':BorrarUno');
+    $group->post('[/]', \MesaController::class . ':CargarUno')->add(\AuthUsuarios::class.':ValidarPermisosDeRol');
+    $group->put('[/]', \MesaController::class . ':ModificarUno')->add(\AuthMesas::class.':ValidarMesa');
+    $group->delete('[/]', \MesaController::class . ':BorrarUno')->add(\AuthMesas::class.':ValidarMesa');
+
 });
 $app->group('/pedidos', function (RouteCollectorProxy $group) 
 {

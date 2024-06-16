@@ -96,7 +96,7 @@ class PedidoController extends Pedido implements IApiUsable
 
             $pedidoId = $data['id_pedido'];
             Pedido::borrarPedido($pedidoId);
-
+            
             return $response->withHeader('Content-Type', 'application/json');
         }
     }

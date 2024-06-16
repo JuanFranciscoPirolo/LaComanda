@@ -34,7 +34,7 @@ class MesaController extends Mesa implements IApiUsable
         $mesa->codigo = Mesa::generarCodigo(5);
         $mesa->estado = "abierto";
         $mesa->nombreMozo = $nombreMozo; // Asignar el nombre del mozo obtenido del formulario
-        $mesa->cobro = $parametros['cobro']; // Se inicializa el cobro en 0
+        $mesa->cobro = $parametros['cobro']; 
         $mesa->fecha_baja = $fecha_baja; // Asignar la fecha de baja
     
         $mesa->crearMesa();
@@ -70,7 +70,7 @@ class MesaController extends Mesa implements IApiUsable
         if (!$mesa) {
             http_response_code(404); // Not Found
             header('Content-Type: application/json');
-            echo json_encode(["mensaje" => "No se encontró ninguna mesa con el código proporcionado."]);
+            echo json_encode(["mensaje" => "No se encontro ninguna mesa con el código proporcionado."]);
             return;
         }
     
@@ -81,7 +81,7 @@ class MesaController extends Mesa implements IApiUsable
         // Guardar los cambios en la base de datos
         Mesa::modificarMesa($mesa);
     
-        $payload = json_encode(array("mensaje" => "Mesa modificada con éxito"));
+        $payload = json_encode(array("mensaje" => "Mesa modificada con exito"));
     
         $response->getBody()->write($payload);
         return $response->withHeader('Content-Type', 'application/json');

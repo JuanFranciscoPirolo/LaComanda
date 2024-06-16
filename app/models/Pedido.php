@@ -5,7 +5,8 @@ class Pedido
     public $nombre_cliente;
     public $tiempo_estimado;
     public $precio_final;
-    public $fecha_baja;
+    public $fecha_baja; //fecha de entrega.
+    // varios productos mismo pedido.
 
     public static function obtenerTodos()
     {
@@ -71,6 +72,7 @@ class Pedido
         $consulta->bindValue(':fecha_baja', date_format($fecha, 'Y-m-d'));
         $consulta->execute();
         echo "Pedido borrado correctamente";
+        
     }
 }
 ?>

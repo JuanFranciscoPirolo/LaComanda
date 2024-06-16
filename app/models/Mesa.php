@@ -4,7 +4,7 @@ class Mesa
     public $codigo;
     public $estado;
     public $nombreMozo;
-    public $cobro;
+    public $cobro;//propina
     public $fecha_baja;
 
     public static function obtenerTodos()
