@@ -1,0 +1,8 @@
+ id_producto,tipo,sector,precio
+1,vino,barra de tragos y vinos,501
+2,cerveza,2500,125
+3,cerveza,2500,125
+4,tipo,sector,0
+5,vino,1,500
+6,cerveza,2,300
+7,empanadas,3,100

@@ -31,7 +31,7 @@ class UsuarioController extends Usuario implements IApiUsable
         $nombre = $parametros['nombre'];
         $clave = $parametros['clave'];
         $rol = $parametros['rol'];
-        $estado = "activo";
+        $sueldo = $parametros['sueldo'];
         $fecha_baja = null;
 
         // Creamos el usuario
@@ -39,7 +39,7 @@ class UsuarioController extends Usuario implements IApiUsable
         $user->nombre = $nombre;
         $user->clave = $clave;
         $user->rol = $rol;
-        $user->estado = $estado;
+        $user->sueldo = $sueldo;
         $user->fecha_baja = $fecha_baja;
         $user->crearUsuario();
 
@@ -55,7 +55,7 @@ class UsuarioController extends Usuario implements IApiUsable
         $data = json_decode($input, true);
 
         // Validar que todos los campos necesarios están presentes
-        $required_fields = ['nombre', 'rol', 'clave', 'estado', 'id_usuario'];
+        $required_fields = ['nombre', 'rol', 'clave','id_usuario'];
         foreach ($required_fields as $field) 
         {
             if (!isset($data[$field])) 
@@ -72,7 +72,7 @@ class UsuarioController extends Usuario implements IApiUsable
         $usuario->nombre = $data['nombre'];
         $usuario->clave = $data['clave'];
         $usuario->rol = $data['rol'];
-        $usuario->estado = $data['estado'];
+        //$usuario->estado = $data['estado'];
 
         Usuario::modificarUsuario($usuario);
 
@@ -103,5 +103,35 @@ class UsuarioController extends Usuario implements IApiUsable
             return $response->withHeader('Content-Type', 'application/json');
         }
 
+    }
+    public static function LogIn($request, $response, $args)
+    {
+      $parametros = $request->getParsedBody();
+      $nombre = $parametros['nombre'];
+      $clave = $parametros['clave'];
+  
+      $usuario = Usuario::obtenerPorClave($nombre, $clave);
+
+  
+      $data = array('nombre' => $usuario->nombre, 'rol' => $usuario->rol, 'clave' => $usuario->clave);
+      $creacionToken = AuthJWT::CrearToken($data);
+
+      $response = $response->withHeader('Content-Type', 'application/json');
+
+
+      $payload = json_encode(array("mensaje" => "Usuario logueado correctamente, Token: ". $creacionToken));
+  
+      $response->getBody()->write($payload);
+      return $response
+        ->withHeader('Content-Type', 'application/json');
+    }
+    
+    public function DescargarPDF($request, $response, $args)
+    {
+        Usuario::ExportarPDF();
+        $payload = json_encode(array("mensaje" => "Usuarios exportados a pdf con exito"));
+
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
     }
 }
