@@ -5,19 +5,19 @@ use Firebase\JWT\Key;
 class AuthJWT
 {
     private static $claveSecreta = 'T3sT$JWT';
-    private static $tipoEncriptacion = 'HS256'; // Cambiado a un string en lugar de un array
+    private static $tipoEncriptacion = 'HS256'; 
 
     public static function CrearToken($datos)
     {
         $ahora = time();
         $payload = array(
             'iat' => $ahora,
-            'exp' => $ahora + 60000, // 60,000 seconds = 16.67 hours
+            'exp' => $ahora + 60000, 
             'aud' => self::Aud(),
             'data' => $datos,
             'app' => "LaComanda"
         );
-        return JWT::encode($payload, self::$claveSecreta, self::$tipoEncriptacion); // Añadido el tercer parámetro
+        return JWT::encode($payload, self::$claveSecreta, self::$tipoEncriptacion); 
     }
 
     public static function VerificarToken($token)
@@ -27,7 +27,7 @@ class AuthJWT
         }
 
         try {
-            $decodificado = JWT::decode($token, new Key(self::$claveSecreta, self::$tipoEncriptacion)); // Usando Key object
+            $decodificado = JWT::decode($token, new Key(self::$claveSecreta, self::$tipoEncriptacion));
         } catch (Exception $e) {
             throw $e;
         }

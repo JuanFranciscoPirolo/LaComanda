@@ -57,6 +57,7 @@ class Producto
         $consulta->execute();
     }
 
+
     public static function borrarProducto($id_producto)
     {
         $objAccesoDato = AccesoDatos::obtenerInstancia();

@@ -6,7 +6,7 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
 class AuthMiddleware
 {
-    private $rol; // Parametro para hacer el middleware más reutilizable
+    private $rol;
 
     public function __construct($rol)
     {
@@ -18,11 +18,9 @@ class AuthMiddleware
         $response = new ResponseClass();
         $params = $request->getQueryParams();
         
-        // Verificar si las credenciales están en los parámetros de consulta
         if (isset($params["credencial"])) {
             $credenciales = $params["credencial"];
         } else {
-            // Si no están en los parámetros de consulta, buscar en el cuerpo de la solicitud
             $parsedBody = $request->getParsedBody();
             $credenciales = isset($parsedBody["credencial"]) ? $parsedBody["credencial"] : null;
         }

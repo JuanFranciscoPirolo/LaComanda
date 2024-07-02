@@ -7,22 +7,6 @@ class AuthProductos
 {
 
 
-    public static function ValidarCampos(Request $request, RequestHandler $requestHandler)
-    {
-        $params = $request->getParsedBody();
-
-        if (isset($params['rol'], $params['tipo'], $params['sector']) &&
-            !empty($params['rol']) && !empty($params['tipo']) && !empty($params['sector'])
-        ) {
-            $response = $requestHandler->handle($request);
-        } else {
-            $response = new ResponseClass();
-            $response->getBody()->write(json_encode(array("error" => "Faltan parametros o son invalidos: rol, tipo, sector")));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
-        }
-        return $response;
-    }
-
     public static function ValidarRol(Request $request, RequestHandler $requestHandler)
     {
         $params = $request->getParsedBody();

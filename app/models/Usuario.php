@@ -7,7 +7,7 @@ class Usuario
     public $clave;
     public $fecha_baja;
     public $rol;
-    public $sueldo; // Cambiado de estado a sueldo
+    public $sueldo; 
     
     public static function obtenerTodos()
     {
@@ -103,7 +103,7 @@ class Usuario
 
         $usuarios = Usuario::obtenerTodos();
 
-        // Agregar objetos al PDF
+       
         foreach ($usuarios as $usuario) {
             $pdf->ChapterTitle($usuario->nombre, $usuario->sueldo);
             $pdf->ChapterBody("Rol: " . $usuario->rol);

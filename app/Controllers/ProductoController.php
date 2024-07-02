@@ -34,7 +34,7 @@ class ProductoController extends Producto implements IApiUsable
         $producto->precio = $precio;
         $producto->tipo = $tipo;
         $producto->sector = $sector;
-
+        
         $producto->crearProducto();
 
         $payload = json_encode(array("mensaje" => "Producto creado con exito"));
@@ -80,7 +80,6 @@ class ProductoController extends Producto implements IApiUsable
     {
         if ($_SERVER["REQUEST_METHOD"] == "DELETE")
         {
-            // Leer datos de la solicitud DELETE
             $data = json_decode(file_get_contents("php://input"), true);
 
             if (!isset($data['id_producto'])) 
@@ -108,10 +107,10 @@ class ProductoController extends Producto implements IApiUsable
             $csvData = $csvFile->getStream()->getContents();
 
             // Procesar el CSV
-            $data = $this->processCSV($csvData);
+            $data = $this->procesarCSV($csvData);
 
             // Insertar datos en la base de datos
-            $this->insertDataIntoDatabase($data);
+            $this->agregarDatos($data);
 
             $payload = json_encode(['message' => 'Archivo subido y procesado correctamente']);
             $response->getBody()->write($payload);
@@ -123,7 +122,7 @@ class ProductoController extends Producto implements IApiUsable
         }
     }
 
-    private function processCSV($csvData)
+    private function procesarCSV($csvData)
     {
         $rows = explode(PHP_EOL, $csvData);
         $data = [];
@@ -135,7 +134,7 @@ class ProductoController extends Producto implements IApiUsable
         return $data;
     }
 
-    private function insertDataIntoDatabase($data)
+    private function agregarDatos($data)
     {
         foreach ($data as $row) {
             if (count($row) < 3) continue; // Saltar filas incompletas
@@ -149,15 +148,38 @@ class ProductoController extends Producto implements IApiUsable
         }
     }
 
-    public function DownloadCSV($request, $response, $args)
+   public function ListarProductosEmpleado($request, $response, $args)
     {
-        // Obtener todos los productos de la base de datos
+        $parametros = $request->getQueryParams();
+        $sector = $parametros['sector'];
+        $pedidos = Pedido::obtenerTodos();
+        $productos = Producto::obtenerTodos();
+
+        foreach($pedidos as $pedido)
+        {
+            $pedido->estado = "Listo para servir";
+            
+        }
+        $productosFiltrados = array_filter($productos, function($producto) use ($sector) 
+        {
+            
+            return $producto->sector == $sector;
+        });
+
+
+        $payload = json_encode(array("productos" => array_values($productosFiltrados)));
+
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
+    } 
+
+    public function DescargarCSV($request, $response, $args)
+    {
         $productos = Producto::obtenerTodos();
     
-        // Crear el contenido del CSV
-        $csvContent = $this->generateCSVContent($productos);
+        $csvContent = $this->generarContenidoCSV($productos);
     
-        // Enviar el contenido del CSV como descarga al cliente
+        // Envip el contenido del CSV como descarga
         $response = $response->withHeader('Content-Type', 'text/csv')
                              ->withHeader('Content-Disposition', 'attachment; filename="productosBDD.csv"')
                              ->withHeader('Pragma', 'no-cache')
@@ -169,7 +191,7 @@ class ProductoController extends Producto implements IApiUsable
     }
     
     
-    private function generateCSVContent($productos)
+    private function generarContenidoCSV($productos)
     {
         $csvContent = "id_producto,tipo,sector,precio" . PHP_EOL;
     

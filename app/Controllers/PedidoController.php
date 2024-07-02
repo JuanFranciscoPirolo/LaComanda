@@ -22,38 +22,79 @@ class PedidoController extends Pedido implements IApiUsable
             if (!empty($pedido_final->productos)) {
                 echo "Productos:\n";
     
-                foreach ($pedido_final->productos as $detalle) {
+                foreach ($pedido_final->productos as $detalle) 
+                {
                     if (is_array($detalle)) {
+
                         $id_producto = $detalle['id_producto'];
                         $cantidad = $detalle['cantidad'];
-                    } else {
+                    } 
+                    else
+                     {
                         $id_producto = $detalle->id_producto;
                         $cantidad = $detalle->cantidad;
                     }
     
-                    // Buscar el nombre del producto en la lista de productos
+                    
                     $nombre_producto = "Producto no encontrado";
                     foreach ($productos as $producto) {
-                        if ($producto->id_producto == $id_producto) {
-                            $nombre_producto = $producto->tipo; // Suponiendo que 'nombre' es el campo deseado
+                        if ($producto->id_producto == $id_producto) 
+                        {
+                            $nombre_producto = $producto->tipo; 
                             break;
                         }
                     }
     
-                    echo "Producto: " . $nombre_producto . ", Cantidad: " . $cantidad . "\n";
+                    echo "Producto: " . $nombre_producto . ", Cantidad: " . $cantidad;
                 }
             } else {
-                echo "No hay productos asociados a este pedido.\n";
+                echo "No hay productos asociados a este pedido.";
             }
         } else {
-            echo "Pedido no encontrado.\n";
+            echo "Pedido no encontrado.";
         }
     
         return $response;
     }
     
     
+    public function obtenerDemora($request, $response, $args) 
+    {
+        $codigo_mesa = $args['codigo_mesa'];
+        $id_pedido = $args['id_pedido'];
 
+        $pedidos = Pedido::obtenerTodos();
+        $pedidoEncontrado = null;
+
+        foreach ($pedidos as $pedido) 
+        {
+            if ($pedido->codigo_mesa == $codigo_mesa && $pedido->id_pedido == $id_pedido) 
+            {
+                $pedidoEncontrado = $pedido;
+                break;
+            }
+        }
+
+        if ($pedidoEncontrado) 
+        {
+            $response->getBody()->write(json_encode(['tiempo_estimado' => $pedidoEncontrado->tiempo_estimado]));
+        } 
+        else 
+        {
+            $response->getBody()->write(json_encode(['error' => 'Pedido no encontrado']));
+            return $response->withStatus(404);
+        }
+
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    public function listarPedidos($request, $response, $args) 
+    {
+        $pedidos = Pedido::obtenerTodos();
+
+        $response->getBody()->write(json_encode($pedidos));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
     public function TraerTodos($request, $response, $args)
     {
         $lista = Pedido::obtenerTodos();
@@ -71,16 +112,21 @@ class PedidoController extends Pedido implements IApiUsable
         $tiempo_estimado = $parametros['tiempo_estimado'];
         $codigo_mesa = $parametros['codigo_mesa'];
         $precio_final = $parametros['precio_final'];
-        $productos = $parametros['productos']; // array of products with quantities
+        $productos = $parametros['productos'];
         $fecha_baja = null;
     
-        // Validar que todos los productos existen
-        foreach ($productos as $producto) {
+        
+        foreach ($productos as $producto) 
+        {
             $id_producto = $producto['id_producto'];
             $producto_db = Producto::obtenerProducto($id_producto);
-            if (!$producto_db) {
+
+            if (!$producto_db) 
+            {
                 $payload = json_encode(array("mensaje" => "El producto con id $id_producto no existe."));
+
                 $response->getBody()->write($payload);
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
         }
@@ -92,7 +138,7 @@ class PedidoController extends Pedido implements IApiUsable
         $pedido->precio_final = $precio_final;
         $pedido->fecha_baja = $fecha_baja;
         $pedido->productos = $productos;
-    
+        $pedido->estado = "en preparacion";
         $pedido->crearPedido();
     
         $payload = json_encode(array("mensaje" => "Pedido creado con exito"));
@@ -159,4 +205,13 @@ class PedidoController extends Pedido implements IApiUsable
             return $response->withHeader('Content-Type', 'application/json');
         }
     }
+
+    public static function listarPedidosListos($request, $response, $args) {
+        $pedidosListos = Pedido::obtenerPedidosListos();
+
+        $response->getBody()->write(json_encode($pedidosListos));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    
 }

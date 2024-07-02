@@ -70,7 +70,8 @@ class Mesa
         echo "Mesa borrada correctamente";
     }
 
-    public static function generarCodigo($length = 5) {
+    public static function generarCodigo($length = 5) 
+    {
         $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $len = strlen($chars);
         $retorno = '';
@@ -79,14 +80,21 @@ class Mesa
         }
         return $retorno;
     }
-    
 
-    public static function CobrarYCerrarMesa($codigo, $cobro){
-        $objAccesoDato = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDato->prepararConsulta("UPDATE mesas SET estado = :estado, cobro = :cobro WHERE codigo = :codigo");
-        $consulta->bindValue(':codigo', $codigo, PDO::PARAM_STR);
-        $consulta->bindValue(':estado', 'cerrada', PDO::PARAM_STR);
-        $consulta->bindValue(':cobro', $cobro, PDO::PARAM_STR);
-        $consulta->execute();
-    }
+public static function obtenerCobroMesa($codigo) 
+{
+    $objAccesoDatos = AccesoDatos::obtenerInstancia();
+    $consulta = $objAccesoDatos->prepararConsulta("SELECT cobro FROM mesas WHERE codigo = :codigo");
+    $consulta->bindValue(':codigo', $codigo, PDO::PARAM_STR);
+    $consulta->execute();
+
+    $cobro = $consulta->fetchColumn();
+    
+    return $cobro;
+}
+
+
+
+    
+    
 }

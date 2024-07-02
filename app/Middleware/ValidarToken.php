@@ -10,11 +10,11 @@ class ValidarToken
 {
     private static function obtenerTokenDelHeader(Request $request): ?string
     {
-        $header = $request->getHeaderLine("Authorization"); // Obtiene el header de autorización
+        $header = $request->getHeaderLine("Authorization"); 
         if (empty($header) || !str_starts_with($header, 'Bearer ')) {
-            return null; // Devuelve null si el header no está presente o no tiene el formato correcto
+            return null; 
         }
-        return trim(explode("Bearer", $header)[1] ?? ''); // Devuelve el token o una cadena vacía si no está presente
+        return trim(explode("Bearer", $header)[1] ?? ''); 
     }
 
     public static function ValidarSocio(Request $request, RequestHandler $handler): Response

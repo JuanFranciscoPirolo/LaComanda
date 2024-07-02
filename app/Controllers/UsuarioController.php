@@ -34,7 +34,7 @@ class UsuarioController extends Usuario implements IApiUsable
         $sueldo = $parametros['sueldo'];
         $fecha_baja = null;
 
-        // Creamos el usuario
+        // CREO EL USUARIO
         $user = new Usuario();
         $user->nombre = $nombre;
         $user->clave = $clave;
@@ -54,13 +54,13 @@ class UsuarioController extends Usuario implements IApiUsable
         $input = file_get_contents("php://input");
         $data = json_decode($input, true);
 
-        // Validar que todos los campos necesarios están presentes
+      
         $required_fields = ['nombre', 'rol', 'clave','id_usuario'];
         foreach ($required_fields as $field) 
         {
             if (!isset($data[$field])) 
             {
-                http_response_code(400); // Bad Request
+                http_response_code(400); // ERROR!!
                 header('Content-Type: application/json');
                 echo json_encode(["mensaje" => "Faltan datos en la solicitud: $field."]);
                 return;
@@ -86,7 +86,6 @@ class UsuarioController extends Usuario implements IApiUsable
     {
         if ($_SERVER["REQUEST_METHOD"] == "DELETE")
         {
-            // Leer datos de la solicitud DELETE
             $data = json_decode(file_get_contents("php://input"), true);
 
             if (!isset($data['id_usuario'])) 

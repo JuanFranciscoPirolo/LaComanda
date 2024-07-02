@@ -57,34 +57,50 @@ $app->group('/usuarios', function (RouteCollectorProxy $group) {
 $app->group('/productos', function (RouteCollectorProxy $group) 
 {
     $group->get('[/]', \ProductoController::class . ':TraerTodos');
-    $group->get('/{id_producto}', \ProductoController::class . ':TraerUno');
-    $group->post('[/]', \ProductoController::class . ':CargarUno')->add(\AuthProductos::class. ':ValidarCampos');
+    $group->post('[/alta]', \ProductoController::class . ':CargarUno');
     $group->put('[/]', \ProductoController::class . ':ModificarUno')->add(\AuthProductos::class . ':ValidarRol');
     $group->delete('[/]', \ProductoController::class . ':BorrarUno')->add(\AuthProductos::class . ':ValidarRol');
     $group->post('/upload-csv', \ProductoController::class . ':UploadCSV');
-})->add(ValidarToken::class. ':ValidarSocio');
+    $group->get('/listarProductos', \ProductoController::class . ':ListarProductosEmpleado');
+    $group->get('/{id_producto}', \ProductoController::class . ':TraerUno');
+});
 
-$app->get('/productos-csv/download', \ProductoController::class . ':DownloadCSV');
+$app->get('/productos-csv/download', \ProductoController::class . ':DescargarCSV');
 
 $app->group('/archivos', function (RouteCollectorProxy $group) {
     $group->get('/PDF', \UsuarioController::class . ':DescargarPDF');
 });
+
 $app->group('/mesas', function (RouteCollectorProxy $group) 
 {
-    $group->get('[/]', \MesaController::class . ':TraerTodos');
+    $group->get('/cobro/{codigo}', \MesaController::class . ':ObtenerCobro');
+    $group->get('[/]', \MesaController::class . ':TraerTodos')->add(ValidarToken::class. ':ValidarSocio');
     $group->get('/{id_mesa}', \MesaController::class . ':TraerUno');
-    $group->post('[/]', \MesaController::class . ':CargarUno')->add(\AuthMesas::class. ':ValidarMozoExistente'); //->add(\AuthMesas::class. ':validarCampos');
+    $group->post('[/alta]', \MesaController::class . ':CargarUno')->add(\AuthMesas::class. ':ValidarMozoExistente'); //->add(\AuthMesas::class. ':validarCampos');
     $group->put('[/]', \MesaController::class . ':ModificarUno')->add(\AuthMesas::class.':ValidarMesa');
     $group->delete('[/]', \MesaController::class . ':BorrarUno')->add(\AuthMesas::class.':ValidarMesa');
 });
+
+
 $app->group('/pedidos', function (RouteCollectorProxy $group) 
 {
-    $group->get('[/]', \PedidoController::class . ':TraerTodos');//ValidarMesaCodigoMesa
+    $group->get('/obtenerPedidosListos', \PedidoController::class . ':listarPedidosListos')->add(ValidarToken::class. ':ValidarMozo');
+    $group->get('/listarPedidos', \PedidoController::class . ':listarPedidos')->add(ValidarToken::class. ':ValidarSocio');
+    $group->get('[/]', \PedidoController::class . ':TraerTodos');
     $group->get('/{codigo_pedido}', \PedidoController::class . ':TraerUno');
-    $group->post('[/]', \PedidoController::class . ':CargarUno')->add(\AuthMesas::class.':ValidarMesaCodigoMesa');
+    $group->post('[/alta]', \PedidoController::class . ':CargarUno')->add(\AuthMesas::class.':ValidarMesaCodigoMesa')->add(ValidarToken::class. ':ValidarMozo');
     $group->put('[/]', \PedidoController::class . ':ModificarUno');
     $group->delete('[/]', \PedidoController::class . ':BorrarUno');
+    $group->get('/demora/{codigo_mesa}/{id_pedido}', \PedidoController::class . ':obtenerDemora');
+    
+    
+});//cambiarEstadoTodosPedidos
+
+$app->post('/cambiarEstado', function () {
+    $estadoNuevo = 'Listo para servir'; 
+    Pedido::cambiarEstadoTodosPedidos($estadoNuevo);
 });
+
 
 $app->run();
 ?>
