@@ -1,5 +1,5 @@
 <?php
-// Error Handling
+
 error_reporting(-1);
 ini_set('display_errors', 1);
 
@@ -22,6 +22,7 @@ require './Middleware/AuthMesas.php';
  require_once './Middleware/AuthJWT.php';
  require_once './Middleware/ValidarSocio.php';
  require_once './Middleware/ValidarToken.php';
+ require_once './Middleware/ValidarMozo.php';
  require_once './Middleware/Logger.php';
 use Dotenv\Dotenv;
 
@@ -33,7 +34,7 @@ require_once './controllers/MesaController.php';
 require_once './controllers/PedidoController.php';
 require_once './DataBase/AccesoDatos.php';
 
-// Load ENV
+
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
 
@@ -47,15 +48,16 @@ $app->group('/login', function (RouteCollectorProxy $group){
 });
 
 $app->group('/usuarios', function (RouteCollectorProxy $group) {
+    $group->get('/exportar-pdf-logo', \UsuarioController::class . ':DescargarPDFLOGO')->add(ValidarToken::class. ':ValidarSocio');
     $group->get('[/]', \UsuarioController::class . ':TraerTodos');
     $group->get('/{id_usuario}', \UsuarioController::class . ':TraerUno');
     $group->post('[/]', \UsuarioController::class . ':CargarUno');
     $group->put('[/]', \UsuarioController::class . ':ModificarUno')->add(\AuthUsuarios::class . ':ValidarCampos');
     $group->delete('[/]', \UsuarioController::class . ':BorrarUno')->add(new AuthMiddleware("usuario"));
-})->add(ValidarToken::class. ':ValidarSocio');
+});
 
 $app->group('/productos', function (RouteCollectorProxy $group) 
-{
+{   
     $group->get('[/]', \ProductoController::class . ':TraerTodos');
     $group->post('[/alta]', \ProductoController::class . ':CargarUno');
     $group->put('[/]', \ProductoController::class . ':ModificarUno')->add(\AuthProductos::class . ':ValidarRol');
@@ -73,17 +75,24 @@ $app->group('/archivos', function (RouteCollectorProxy $group) {
 
 $app->group('/mesas', function (RouteCollectorProxy $group) 
 {
-    $group->get('/cobro/{codigo}', \MesaController::class . ':ObtenerCobro');
+    $group->get('/mejores-comentarios', \MesaController::class . ':ObtenerComentarios')->add(ValidarToken::class. ':ValidarSocio');
+    $group->get('/mesa-mas-usada', \MesaController::class . ':ObtenerMesaUsada')->add(ValidarToken::class. ':ValidarSocio');
+    $group->get('/cobro/{codigo}', \MesaController::class . ':ObtenerCobro')->add(ValidarToken::class. ':ValidarMozo');
     $group->get('[/]', \MesaController::class . ':TraerTodos')->add(ValidarToken::class. ':ValidarSocio');
     $group->get('/{id_mesa}', \MesaController::class . ':TraerUno');
-    $group->post('[/alta]', \MesaController::class . ':CargarUno')->add(\AuthMesas::class. ':ValidarMozoExistente'); //->add(\AuthMesas::class. ':validarCampos');
+    $group->post('/alta', \MesaController::class . ':CargarUno')->add(\AuthMesas::class. ':ValidarMozoExistente');
     $group->put('[/]', \MesaController::class . ':ModificarUno')->add(\AuthMesas::class.':ValidarMesa');
-    $group->delete('[/]', \MesaController::class . ':BorrarUno')->add(\AuthMesas::class.':ValidarMesa');
+    $group->delete('[/]', \MesaController::class . ':BorrarUno')->add(\AuthMesas::class.':ValidarMesa')->add(ValidarToken::class. ':ValidarSocio');
+    $group->post('/encuesta', \MesaController::class . ':PublicarEncuesta'); 
+    
 });
+
 
 
 $app->group('/pedidos', function (RouteCollectorProxy $group) 
 {
+    $group->post('/cambiarEstadoPreparacion', \PedidoController::class . ':cambiarEstadoAPreparacionn');
+    $group->get('/fuera-de-tiempo', \PedidoController::class . ':listarPedidosNoEntregadosATiempo')->add(ValidarToken::class. ':ValidarSocio');
     $group->get('/obtenerPedidosListos', \PedidoController::class . ':listarPedidosListos')->add(ValidarToken::class. ':ValidarMozo');
     $group->get('/listarPedidos', \PedidoController::class . ':listarPedidos')->add(ValidarToken::class. ':ValidarSocio');
     $group->get('[/]', \PedidoController::class . ':TraerTodos');
@@ -92,14 +101,24 @@ $app->group('/pedidos', function (RouteCollectorProxy $group)
     $group->put('[/]', \PedidoController::class . ':ModificarUno');
     $group->delete('[/]', \PedidoController::class . ':BorrarUno');
     $group->get('/demora/{codigo_mesa}/{id_pedido}', \PedidoController::class . ':obtenerDemora');
+    $group->post('/actualizarFoto', \PedidoController::class . ':ActualizarFotos');
     
     
-});//cambiarEstadoTodosPedidos
-
-$app->post('/cambiarEstado', function () {
-    $estadoNuevo = 'Listo para servir'; 
-    Pedido::cambiarEstadoTodosPedidos($estadoNuevo);
+    
 });
+
+
+$app->post('/cambiarEstado', function ($request, $response, $args) {
+    $estadoNuevo = 'Listo para servir'; 
+    $resultado = Pedido::cambiarEstadoTodosPedidos($estadoNuevo);
+
+    $payload = json_encode(array("mensaje" => $resultado ? "Estado cambiado a Listo para servir" : "Error al cambiar el estado"));
+    
+    $response->getBody()->write($payload);
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->get('/estadisticas', \UsuarioController::class . ':ObtenerEstadisticass');
 
 
 $app->run();

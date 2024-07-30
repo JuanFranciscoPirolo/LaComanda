@@ -1,0 +1,447 @@
+{
+	"info": {
+		"_postman_id": "7743df3b-39f9-464e-a8f3-d4ea4a46a917",
+		"name": "Consultas Comanda",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34176366"
+	},
+	"item": [
+		{
+			"name": "❏ 1- Una moza toma el pedido",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MjIxOTIxMzgsImV4cCI6MTcyMjI1MjEzOCwiYXVkIjoiYTU2NzhkODFlNTNkODE2YjA4MjgxODU0MDYxM2NiOTJlMmNkNjE0MyIsImRhdGEiOnsibm9tYnJlIjoiUmFtaXJvIiwicm9sIjoibW96byIsImNsYXZlIjoiaG9sYTEyMzQifSwiYXBwIjoiTGFDb21hbmRhIn0.A-RDNydhVGmkj1X2cs6SHFPBzXj9oCRzpc3w3M2p_18",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nombre_cliente\": \"Juancito\",\r\n    \"tiempo_estimado\": \"30 minutos\",\r\n    \"precio_final\": 100.00,\r\n    \"codigo_mesa\": \"wXA1h\",\r\n    \"productos\": [\r\n        { \"id_producto\": 9, \"cantidad\": 2 },\r\n        { \"id_producto\": 10, \"cantidad\": 1 },\r\n        { \"id_producto\": 11, \"cantidad\": 1 }\r\n    ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:666/pedidos/alta",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"pedidos",
+						"alta"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 2- El mozo saca una foto de la mesa y lo relaciona con el pedido.",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "foto_url",
+							"value": "C:\\Users\\profe\\Downloads\\C",
+							"type": "text"
+						},
+						{
+							"key": "codigo",
+							"value": "wXA1h",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:666/pedidos/actualizarFoto",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"pedidos",
+						"actualizarFoto"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3 ❏ Listar todos los productos pendientes de este tipo de empleado.",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:666/productos/listarProductos?sector=cocina",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"productos",
+						"listarProductos"
+					],
+					"query": [
+						{
+							"key": "sector",
+							"value": "cocina"
+						},
+						{
+							"key": "sector",
+							"value": "bartender",
+							"disabled": true
+						},
+						{
+							"key": "sector",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3.5 Debe cambiar el estado a “en preparación” y agregarle el tiempo de preparación.",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id_pedido",
+							"value": "28",
+							"type": "text"
+						},
+						{
+							"key": "tiempo_preparacion",
+							"value": "00:30:00",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:666/pedidos/cambiarEstadoPreparacion",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"pedidos",
+						"cambiarEstadoPreparacion"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 4- El cliente ingresa el código de la mesa junto con el número de pedido y ve el tiempo de demora de su pedido.",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "file",
+					"file": {}
+				},
+				"url": {
+					"raw": "http://localhost:666/pedidos/demora/wXA1h/27",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"pedidos",
+						"demora",
+						"wXA1h",
+						"27"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 5- Alguno de los socios pide el listado de pedidos y el tiempo de demora de ese pedido.",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MjIxOTI4MjYsImV4cCI6MTcyMjI1MjgyNiwiYXVkIjoiYTU2NzhkODFlNTNkODE2YjA4MjgxODU0MDYxM2NiOTJlMmNkNjE0MyIsImRhdGEiOnsibm9tYnJlIjoiSmF2aWVyIiwicm9sIjoic29jaW8iLCJjbGF2ZSI6IjEyMzQ1Njc3In0sImFwcCI6IkxhQ29tYW5kYSJ9.rrQV05RK3Bim6BB9JRu_Dv7BnE_LPhB5UG65UT5HYdo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:666/pedidos/listarPedidos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"pedidos",
+						"listarPedidos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 6.5 Listar todos los productos pendientes de este tipo de empleado",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 6.8 Debe cambiar el estado a “listo para servir” .",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:666/pedidos/cambiarEstado",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"pedidos",
+						"cambiarEstado"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 7- La moza se fija los pedidos que están listos para servir.",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:666/pedidos/obtenerPedidosListos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"pedidos",
+						"obtenerPedidosListos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 8- Alguno de los socios pide el listado de las mesas y sus estados .",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 9- La moza cobra la cuenta.",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 10- Alguno de los socios cierra la mesa.",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"codigo\":\"wXA1h\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:666/mesas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"mesas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 11- El cliente ingresa el código de mesa y el del pedido junto con los datos de la encuesta.",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "codigo_mesa",
+							"value": "wXA1h",
+							"type": "text"
+						},
+						{
+							"key": "comentario",
+							"value": "Muy bueno la verdad",
+							"type": "text"
+						},
+						{
+							"key": "puntuacion",
+							"value": "5",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:666/mesas/encuesta",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"mesas",
+						"encuesta"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 12- Alguno de los socios pide los mejores comentarios",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:666/mesas/mejores-comentarios",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"mesas",
+						"mejores-comentarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 13- Alguno de los socios pide la mesa más usada.",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:666/mesas/mesa-mas-usada",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"mesas",
+						"mesa-mas-usada"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 14- Alguno de los socios pide los pedidos que no se entregaron en el tiempo estipulado.",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:666/pedidos/fuera-de-tiempo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"pedidos",
+						"fuera-de-tiempo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "❏ 16- Alguno de los socios pide descargar un pdf con el logo de la empresa.",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:666/usuarios/exportar-pdf-logo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"usuarios",
+						"exportar-pdf-logo"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

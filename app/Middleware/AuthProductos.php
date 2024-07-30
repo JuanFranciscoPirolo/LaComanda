@@ -20,7 +20,7 @@ class AuthProductos
         $id_usuario = $params['id_usuario'];
         $id_producto = $params['id_producto'];
 
-        // Obtener usuario y producto de la base de datos
+        
         $usuario = Usuario::obtenerUsuario($id_usuario);
         $producto = Producto::ObtenerProducto($id_producto);
 

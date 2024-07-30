@@ -32,7 +32,13 @@
 							],
 							"request": {
 								"method": "POST",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": " Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MTkwMDg3MTcsImV4cCI6MTcxOTA2ODcxNywiYXVkIjoiYTU2NzhkODFlNTNkODE2YjA4MjgxODU0MDYxM2NiOTJlMmNkNjE0MyIsImRhdGEiOnsibm9tYnJlIjoiSmF2aWVyIiwicm9sIjoic29jaW8iLCJjbGF2ZSI6IjEyMzQ1Njc3In0sImFwcCI6IkxhQ29tYW5kYSJ9.vHgJixqyhoO6QX6GeY56seXRN5_9Th6-wbVaDUZR-ck:",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "formdata",
 									"formdata": [
@@ -74,7 +80,7 @@
 										},
 										{
 											"key": "nombre",
-											"value": "Claudio",
+											"value": "Javier",
 											"type": "text"
 										},
 										{
@@ -84,12 +90,23 @@
 										},
 										{
 											"key": "rol",
-											"value": "cocina",
+											"value": "socio",
 											"type": "text"
 										},
 										{
 											"key": "fecha_baja",
 											"value": "2024-12-12",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "sueldo",
+											"value": "500000",
+											"type": "text"
+										},
+										{
+											"key": "token",
+											"value": "1224",
 											"type": "text",
 											"disabled": true
 										}
@@ -147,10 +164,16 @@
 							"name": "ModificarUsuario",
 							"request": {
 								"method": "PUT",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": " Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MTkwMDM5MzEsImV4cCI6MTcxOTA2MzkzMSwiYXVkIjoiYTU2NzhkODFlNTNkODE2YjA4MjgxODU0MDYxM2NiOTJlMmNkNjE0MyIsImRhdGEiOnsibm9tYnJlIjoiSmF2aWVyIiwicm9sIjoic29jaW8iLCJjbGF2ZSI6IjEyMzQ1Njc3In0sImFwcCI6IkxhQ29tYW5kYSJ9.Kki_i5iS34KiBE98cWH972TBxHOuADk0Y0kQgCIZLaQ",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"nombre\":\"Francisco\",\r\n    \"rol\":\"bartender\",\r\n    \"clave\":\"caricatura\",\r\n    \"estado\":\"activo\",\r\n    \"id_usuario\":3\r\n}",
+									"raw": "{\r\n    \"nombre\":\"Cleopatra\",\r\n    \"rol\":\"bartender\",\r\n    \"clave\":\"clavicular123\",\r\n    \"estado\":\"activo\",\r\n    \"id_usuario\":3\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -175,10 +198,16 @@
 							"name": "BorrarUsuario",
 							"request": {
 								"method": "DELETE",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": " Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MTkwMDg3MTcsImV4cCI6MTcxOTA2ODcxNywiYXVkIjoiYTU2NzhkODFlNTNkODE2YjA4MjgxODU0MDYxM2NiOTJlMmNkNjE0MyIsImRhdGEiOnsibm9tYnJlIjoiSmF2aWVyIiwicm9sIjoic29jaW8iLCJjbGF2ZSI6IjEyMzQ1Njc3In0sImFwcCI6IkxhQ29tYW5kYSJ9.vHgJixqyhoO6QX6GeY56seXRN5_9Th6-wbVaDUZR-ck:",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id_usuario\": 3\r\n\r\n}\r\n",
+									"raw": "{\r\n    \"id_usuario\": 4,\r\n    \"credencial\": \"usuario\"\r\n\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -258,18 +287,18 @@
 										},
 										{
 											"key": "tipo",
-											"value": "cerveza",
+											"value": "Una milanesa a caballo",
 											"type": "text"
 										},
 										{
 											"key": "sector",
-											"value": "2500",
+											"value": "cocina",
 											"type": "text"
 										}
 									]
 								},
 								"url": {
-									"raw": "http://localhost:666/productos/",
+									"raw": "http://localhost:666/productos/alta",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -277,7 +306,7 @@
 									"port": "666",
 									"path": [
 										"productos",
-										""
+										"alta"
 									]
 								}
 							},
@@ -369,23 +398,53 @@
 								"method": "POST",
 								"header": [],
 								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"codigo\": \"125a3\",\r\n    \"estado\": \"cerrada\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "foto",
+											"type": "file",
+											"src": "/C:/Users/profe/Desktop/MATEMATICAS/WhatsApp Image 2019-05-09 at 12.10.35.jpeg",
+											"disabled": true
+										},
+										{
+											"key": "estado",
+											"value": "cerrado",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "nombreMozo",
+											"value": "Juan",
+											"type": "text"
+										},
+										{
+											"key": "cobro",
+											"value": "25000",
+											"type": "text"
 										}
-									}
+									]
 								},
 								"url": {
-									"raw": "http://localhost:777/mesas",
+									"raw": "http://localhost:666/mesas",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
-									"port": "777",
+									"port": "666",
 									"path": [
 										"mesas"
+									],
+									"query": [
+										{
+											"key": "estado",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "foto",
+											"value": null,
+											"disabled": true
+										}
 									]
 								}
 							},
@@ -397,12 +456,12 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:777/mesas",
+									"raw": "http://localhost:666/mesas",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
-									"port": "777",
+									"port": "666",
 									"path": [
 										"mesas"
 									]
@@ -417,7 +476,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"nombreMozo\": \"Carlos\",\r\n    \"cobro\": 1000,\r\n    \"codigo\": \"ihhpm\"\r\n\r\n}",
+									"raw": "{\r\n    \"nombreMozo\": \"Carlos\",\r\n    \"cobro\": 1000,\r\n    \"codigo\": \"DFbSW\"\r\n\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -445,7 +504,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"codigo\":\"ihhpm\"\r\n}",
+									"raw": "{\r\n    \"codigo\":\"DFbSW\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -594,8 +653,401 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Trae todos los pedidos",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "http://localhost:666/pedidos",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "666",
+									"path": [
+										"pedidos"
+									]
+								}
+							},
+							"response": []
 						}
 					]
+				}
+			]
+		},
+		{
+			"name": "Circuito completo",
+			"item": [
+				{
+					"name": "LOG SOCIO",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nombre",
+									"value": "Javier",
+									"type": "text"
+								},
+								{
+									"key": "clave",
+									"value": "12345677",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:666/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "666",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log mozo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nombre",
+									"value": "Ramiro",
+									"type": "text"
+								},
+								{
+									"key": "clave",
+									"value": "hola1234",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:666/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "666",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AltaMesa",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nombreMozo",
+									"value": "Ramiro",
+									"type": "text"
+								},
+								{
+									"key": "cobro",
+									"value": "2500",
+									"type": "text"
+								},
+								{
+									"key": "codigo",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:666/mesas/alta",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "666",
+							"path": [
+								"mesas",
+								"alta"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AltaPedido",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre_cliente\": \"John Doe\",\r\n    \"tiempo_estimado\": \"30 minutos\",\r\n    \"precio_final\": 100.00,\r\n    \"codigo_mesa\": \"wXA1h\",\r\n    \"productos\": [\r\n        { \"id_producto\": 2, \"cantidad\": 4 },\r\n        { \"id_producto\": 1, \"cantidad\": 2 }\r\n    ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:666/pedidos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "666",
+							"path": [
+								"pedidos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ObtenerPedido",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:666/pedidos/XHibb",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "666",
+							"path": [
+								"pedidos",
+								"XHibb"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Entrega pedido",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"codigo_mesa\": \"wXA1h\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:666/pedidos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "666",
+							"path": [
+								"pedidos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Se van clientes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MjIyOTg2NjcsImV4cCI6MTcyMjM1ODY2NywiYXVkIjoiYTU2NzhkODFlNTNkODE2YjA4MjgxODU0MDYxM2NiOTJlMmNkNjE0MyIsImRhdGEiOnsibm9tYnJlIjoiSmF2aWVyIiwicm9sIjoic29jaW8iLCJjbGF2ZSI6IjEyMzQ1Njc3In0sImFwcCI6IkxhQ29tYW5kYSJ9.MAxinhyeFiCzdd2b-V45gPY_2IrElAV5el1mrpQARqk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"codigo\":\"KIziA\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:666/mesas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "666",
+							"path": [
+								"mesas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generar PDF",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:666/archivos/PDF",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "666",
+							"path": [
+								"archivos",
+								"PDF"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BDDACSV",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:666/productos-csv/download",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "666",
+							"path": [
+								"productos-csv",
+								"download"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AltaDatosCSV",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "csv",
+									"type": "file",
+									"src": "/C:/Users/profe/Desktop/productos.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:666/productos/upload-csv",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "666",
+							"path": [
+								"productos",
+								"upload-csv"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LOGIN",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nombre",
+									"value": "Javier",
+									"type": "text"
+								},
+								{
+									"key": "clave",
+									"value": "12345677",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:666/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "666",
+							"path": [
+								"login"
+							],
+							"query": [
+								{
+									"key": "nombre",
+									"value": "Juancito",
+									"disabled": true
+								},
+								{
+									"key": "clave",
+									"value": "5678",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ESTADISTICAS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:666/estadisticas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "666",
+							"path": [
+								"estadisticas"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}

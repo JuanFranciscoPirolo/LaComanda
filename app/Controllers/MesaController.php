@@ -14,7 +14,6 @@ class MesaController extends Mesa implements IApiUsable
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    
     public function TraerTodos($request, $response, $args)
     {
         $lista = Mesa::obtenerTodos();
@@ -23,36 +22,34 @@ class MesaController extends Mesa implements IApiUsable
         $response->getBody()->write($payload);
         return $response->withHeader('Content-Type', 'application/json');
     }
+
     public function CargarUno($request, $response, $args)
     {
         $parametros = $request->getParsedBody();
-    
 
         $nombreMozo = $parametros['nombreMozo']; 
-    
-        $fecha_baja = null; 
+        $fecha_baja = null;
+
         $mesa = new Mesa();
         $mesa->codigo = Mesa::generarCodigo(5);
         $mesa->estado = "abierto";
         $mesa->nombreMozo = $nombreMozo; 
-        $mesa->cobro = $parametros['cobro']; 
         $mesa->fecha_baja = $fecha_baja;
-    
+
         $mesa->crearMesa();
-    
+
         $payload = json_encode(array("mensaje" => "Mesa creada con exito"));
-    
+
         $response->getBody()->write($payload);
         return $response->withHeader('Content-Type', 'application/json');
     }
-    
+
     public function ModificarUno($request, $response, $args)
     {
         $input = file_get_contents("php://input");
         $data = json_decode($input, true);
-    
-     
-        $required_fields = ['codigo', 'nombreMozo', 'cobro'];
+
+        $required_fields = ['codigo', 'nombreMozo'];
         foreach ($required_fields as $field) 
         {
             if (!isset($data[$field])) 
@@ -63,21 +60,17 @@ class MesaController extends Mesa implements IApiUsable
                 return;
             }
         }
-    
-        
+
         $mesa = Mesa::obtenerMesa($data['codigo']);
         $mesa->nombreMozo = $data['nombreMozo'];
-        $mesa->cobro = $data['cobro'];
-    
-        
+
         Mesa::modificarMesa($mesa);
-    
+
         $payload = json_encode(array("mensaje" => "Mesa modificada con exito"));
-    
+
         $response->getBody()->write($payload);
         return $response->withHeader('Content-Type', 'application/json');
     }
-    
 
     public function BorrarUno($request, $response, $args)
     {
@@ -98,19 +91,48 @@ class MesaController extends Mesa implements IApiUsable
 
             return $response->withHeader('Content-Type', 'application/json');
         }
-
     }
-        public function ObtenerCobro($request, $response, $args)
+
+    public function PublicarEncuesta($request, $response, $args)
     {
-        $codigo = $args['codigo'];
-        $cobro = Mesa::obtenerCobroMesa($codigo);
-        
-        if ($cobro !== false) {
-            $payload = json_encode(array("codigo" => $codigo, "cobro" => $cobro));
-        } else {
-            $payload = json_encode(array("mensaje" => "No se encontró ninguna mesa con el código proporcionado."));
+        $parametros = $request->getParsedBody();
+        $codigo_mesa = $parametros['codigo_mesa'];
+        $puntuacion = $parametros['puntuacion'];
+        $comentario = $parametros['comentario'];  
+
+        if (empty($codigo_mesa) || empty($puntuacion)) {
+            $payload = json_encode(array("mensaje" => "Faltan parametros requeridos"));
+            $response->getBody()->write($payload);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         }
-        
+
+        Mesa::InsertarEncuesta($codigo_mesa, $puntuacion, $comentario);
+
+        $payload = json_encode(array("mensaje" => "Encuesta publicada con exito"));
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    public function ObtenerComentarios($request, $response, $args)
+    {
+        $comentarios = Mesa::obtenerMejoresComentarios();
+
+        $payload = json_encode($comentarios);
+
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    public function ObtenerMesaUsada($request, $response, $args)
+    {
+        $mesa = Mesa::obtenerMesaMasUsada();
+
+        if ($mesa) {
+            $payload = json_encode($mesa);
+        } else {
+            $payload = json_encode(array("mensaje" => "No se encontraron datos"));
+        }
+
         $response->getBody()->write($payload);
         return $response->withHeader('Content-Type', 'application/json');
     }

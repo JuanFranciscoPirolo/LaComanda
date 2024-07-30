@@ -8,7 +8,72 @@ class Pedido {
     public $codigo_mesa;
     public $productos;
     public $estado; 
+    public $foto;
 
+    public static function cambiarEstadoAPreparacion($id_pedido, $tiempo_preparacion) {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        $consulta = $objAccesoDatos->prepararConsulta(
+            "UPDATE pedidos 
+            SET estado = 'en preparación', 
+                tiempo_estimado = :tiempo_preparacion
+            WHERE id_pedido = :id_pedido"
+        );
+        $consulta->bindValue(':id_pedido', $id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(':tiempo_preparacion', $tiempo_preparacion, PDO::PARAM_STR);
+
+        return $consulta->execute();
+    }
+
+    public static function cambiarEstadoListoParaServir($codigoPedido, $rol)
+    {
+    $estado = 'listo para servir';
+
+    $query = "UPDATE productos_pedido SET estado = :estado 
+              WHERE codigo_pedido = :codigo_pedido AND rol = :rol";
+
+    $objetoAccesoDato = AccesoDatos::obtenerInstancia();
+    $consulta = $objetoAccesoDato->prepararConsulta($query);
+    $consulta->bindValue(':estado', $estado, PDO::PARAM_STR);
+    $consulta->bindValue(':codigo_pedido', $codigoPedido, PDO::PARAM_STR);
+    $consulta->bindValue(':rol', $rol, PDO::PARAM_STR);
+    $consulta->execute();
+
+    return $consulta->rowCount();
+    }
+
+    public static function obtenerPedidosNoEntregadosATiempo() {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        
+        $consulta = $objAccesoDatos->prepararConsulta(
+            "SELECT *,
+                TIMESTAMPDIFF(MINUTE, DATE_SUB(NOW(), INTERVAL TIME_TO_SEC(tiempo_estimado) SECOND), NOW()) AS tiempo_real,
+                TIME_TO_SEC(tiempo_estimado) / 60 AS tiempo_estimado_minutos
+            FROM pedidos
+            WHERE fecha_baja IS NOT NULL
+            AND TIMESTAMPDIFF(MINUTE, DATE_SUB(NOW(), INTERVAL TIME_TO_SEC(tiempo_estimado) SECOND), NOW()) > (TIME_TO_SEC(tiempo_estimado) / 60)"
+        );
+        
+        $consulta->execute();
+        return $consulta->fetchAll(PDO::FETCH_CLASS, 'Pedido');
+    }
+    
+
+    
+    
+    public static function actualizarFoto($codigo_mesa, $foto)
+    {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        $consulta = $objAccesoDatos->prepararConsulta(
+            "UPDATE pedidos SET foto = :foto WHERE codigo_mesa = :codigo_mesa"
+        );
+        $consulta->bindValue(':codigo_mesa', $codigo_mesa, PDO::PARAM_STR);
+        $consulta->bindValue(':foto', $foto, PDO::PARAM_STR);
+        $consulta->execute();
+    
+        return $consulta->rowCount(); 
+    }
+    
+    
 
     public static function obtenerTodos() 
     {
@@ -27,7 +92,7 @@ class Pedido {
     public static function obtenerPedido($codigo_mesa)
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT * FROM pedidos WHERE codigo_mesa = :codigo_mesa");
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT * FROM pedidos WHERE codigo_mesa = :codigo_mesa ORDER BY id_pedido DESC LIMIT 1");
         $consulta->bindValue(':codigo_mesa', $codigo_mesa, PDO::PARAM_INT);
         $consulta->execute();
         $pedido = $consulta->fetchObject('Pedido');
@@ -120,9 +185,17 @@ class Pedido {
             WHERE codigo_mesa = :codigo_mesa"
         );
         $consulta->bindValue(':codigo_mesa', $codigo_mesa, PDO::PARAM_INT);
-        echo "Pedido borrado correctamente";
-        return $consulta->execute();
+        $resultado = $consulta->execute();
+        
+        if ($resultado) {
+            echo "Pedido borrado correctamente";
+        } else {
+            echo "Error al borrar el pedido";
+        }
+        
+        return $resultado;
     }
+    
 
     public static function cambiarEstadoTodosPedidos($estadoNuevo) {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();

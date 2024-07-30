@@ -56,7 +56,19 @@ class PedidoController extends Pedido implements IApiUsable
     
         return $response;
     }
-    
+
+    public function cambiarEstadoAPreparacionn($request, $response, $args) {
+        $params = $request->getParsedBody();
+        $id_pedido = $params['id_pedido'];
+        $tiempo_preparacion = $params['tiempo_preparacion'];
+
+        $resultado = Pedido::cambiarEstadoAPreparacion($id_pedido, $tiempo_preparacion);
+
+        $payload = json_encode(array("mensaje" => $resultado ? "Estado cambiado a en preparación" : "Error al cambiar el estado"));
+        
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
+    }
     
     public function obtenerDemora($request, $response, $args) 
     {
@@ -87,7 +99,29 @@ class PedidoController extends Pedido implements IApiUsable
 
         return $response->withHeader('Content-Type', 'application/json');
     }
-
+    public function CambiarEstadoListoParaServirr($request, $response, $args)
+    {
+        $parametros = $request->getParsedBody();
+        $codigoPedido = $parametros['codigo_pedido'];
+        $idEmpleado = $parametros['id_usuario'];
+    
+        
+        $usuario = Usuario::obtenerUsuario($idEmpleado);
+        $rol = $usuario->rol;
+    
+        
+        $filasAfectadas = Pedido::cambiarEstadoListoParaServir($codigoPedido, $rol);
+    
+        if ($filasAfectadas > 0) {
+            $payload = json_encode(array("mensaje" => "Estado actualizado a 'listo para servir' para los productos del rol $rol"));
+        } else {
+            $payload = json_encode(array("mensaje" => "No se encontraron productos para actualizar"));
+        }
+    
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+    
     public function listarPedidos($request, $response, $args) 
     {
         $pedidos = Pedido::obtenerTodos();
@@ -140,7 +174,7 @@ class PedidoController extends Pedido implements IApiUsable
         $pedido->productos = $productos;
         $pedido->estado = "en preparacion";
         $pedido->crearPedido();
-    
+
         $payload = json_encode(array("mensaje" => "Pedido creado con exito"));
     
         $response->getBody()->write($payload);
@@ -153,7 +187,6 @@ class PedidoController extends Pedido implements IApiUsable
     {
         $data = $request->getParsedBody();
     
-        // Validar que todos los campos necesarios están presentes
         $required_fields = ['id_pedido', 'nombre_cliente', 'tiempo_estimado', 'precio_final'];
         foreach ($required_fields as $field) {
             if (!isset($data[$field])) {
@@ -212,6 +245,37 @@ class PedidoController extends Pedido implements IApiUsable
         $response->getBody()->write(json_encode($pedidosListos));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
+
+    public function ActualizarFotos($request, $response, $args)
+    {
+        $parametros = $request->getParsedBody();
+        $codigo = $parametros['codigo'];
+        $foto = $parametros['foto_url'];
+    
+        $filasAfectadas = Pedido::actualizarFoto($codigo, $foto);
+        
+        if ($filasAfectadas > 0) {
+            $payload = json_encode(array("mensaje" => "Foto actualizada con exito"));
+        } else {
+            $payload = json_encode(array("mensaje" => "No se encontro la mesa o no se pudo actualizar la foto"));
+        }
+    
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    public function listarPedidosNoEntregadosATiempo($request, $response, $args) {
+        $pedidosNoEntregados = Pedido::obtenerPedidosNoEntregadosATiempo();
+    
+        if (empty($pedidosNoEntregados)) {
+            $response->getBody()->write(json_encode(["mensaje" => "No hay pedidos que no se entregaron a tiempo."]));
+        } else {
+            $response->getBody()->write(json_encode($pedidosNoEntregados));
+        }
+    
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+    
 
     
 }

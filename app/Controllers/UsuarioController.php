@@ -103,6 +103,14 @@ class UsuarioController extends Usuario implements IApiUsable
         }
 
     }
+    public function ObtenerEstadisticass($request, $response, $args)
+    {
+        $estadisticas = Usuario::obtenerEstadisticas();
+        $payload = json_encode($estadisticas);
+
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
+    }
     public static function LogIn($request, $response, $args)
     {
       $parametros = $request->getParsedBody();
@@ -129,6 +137,15 @@ class UsuarioController extends Usuario implements IApiUsable
     {
         Usuario::ExportarPDF();
         $payload = json_encode(array("mensaje" => "Usuarios exportados a pdf con exito"));
+
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    public function DescargarPDFLOGO($request, $response, $args)
+    {
+        Usuario::ExportarPDFLOGO();
+        $payload = json_encode(array("mensaje" => "Logo exportado a pdf con exito"));
 
         $response->getBody()->write($payload);
         return $response->withHeader('Content-Type', 'application/json');

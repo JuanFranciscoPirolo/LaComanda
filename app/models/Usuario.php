@@ -18,6 +18,41 @@ class Usuario
         return $consulta->fetchAll(PDO::FETCH_CLASS, 'Usuario');
     }
 
+    public static function obtenerEstadisticas()
+    {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        
+        
+        $consulta_pedidos = "
+        SELECT 
+            COUNT(*) AS total_pedidos,
+            SUM(CASE WHEN estado = 'Listo para servir' THEN 1 ELSE 0 END) AS pedidos_listos_para_servir,
+            SUM(precio_final) AS ingresos_totales,
+            AVG(TIME_TO_SEC(tiempo_estimado)) / 60 AS tiempo_estimado_promedio_minutos
+        FROM pedidos
+        WHERE fecha_baja >= CURDATE() - INTERVAL 30 DAY
+        ";
+        $resultado_pedidos = $objAccesoDatos->prepararConsulta($consulta_pedidos);
+        $resultado_pedidos->execute();
+        $estadisticas_pedidos = $resultado_pedidos->fetch(PDO::FETCH_ASSOC);
+
+        $consulta_mesas = "
+        SELECT 
+            COUNT(*) AS mesas_abiertas,
+            SUM(CASE WHEN estado = 'cerrada' THEN 1 ELSE 0 END) AS mesas_cerradas,
+            SUM(cobro) AS ingresos_totales_mesas
+        FROM mesas
+        WHERE fecha_baja >= CURDATE() - INTERVAL 30 DAY
+        ";
+        $resultado_mesas = $objAccesoDatos->prepararConsulta($consulta_mesas);
+        $resultado_mesas->execute();
+        $estadisticas_mesas = $resultado_mesas->fetch(PDO::FETCH_ASSOC);
+
+        return [
+            'pedidos' => $estadisticas_pedidos,
+            'mesas' => $estadisticas_mesas
+        ];
+    }
     public static function obtenerUsuario($id_usuario)
     {
         try
@@ -110,7 +145,18 @@ class Usuario
             $pdf->Ln();
         }
 
-        $pdf->Output($path, 'F');
+        $pdf->Output($path, 'D');
     }
+    public static function ExportarPDFLOGO($path = "./logo.pdf")
+    {
+        $pdf = new PDF();
+        $pdf->AddPage();
+        $logo = "./utilities/logo.jpg";
+        $pdf->Image($logo, 10, 10, 50);
+        $pdf->SetFont('Arial', 'B', 16);
+        $pdf->Cell(0, 10, 'Logo del restoran', 0, 1, 'C');
+        $pdf->Output($path, 'D');
+    }
+    
 }
 ?>

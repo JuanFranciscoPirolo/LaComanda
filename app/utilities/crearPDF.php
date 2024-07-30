@@ -7,7 +7,7 @@ require_once "../vendor/setasign/fpdf/fpdf.php";
         {
             $this->SetFont('Arial', 'B', 12);
             $this->Cell(80);
-            $this->Cell(30, 10, 'Lista Usuarios', 1, 0, 'C');
+            $this->Cell(30, 10, 'PDF', 1, 0, 'C');
             $this->Ln(20);
         }
 

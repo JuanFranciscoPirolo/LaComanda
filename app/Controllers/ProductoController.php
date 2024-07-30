@@ -48,7 +48,7 @@ class ProductoController extends Producto implements IApiUsable
         $input = file_get_contents("php://input");
         $data = json_decode($input, true);
 
-        // Validar que todos los campos necesarios están presentes
+        
         $required_fields = ['precio', 'tipo', 'sector','id_producto'];
         foreach ($required_fields as $field) 
         {
@@ -106,10 +106,10 @@ class ProductoController extends Producto implements IApiUsable
             $filename = $csvFile->getClientFilename();
             $csvData = $csvFile->getStream()->getContents();
 
-            // Procesar el CSV
+          
             $data = $this->procesarCSV($csvData);
 
-            // Insertar datos en la base de datos
+            
             $this->agregarDatos($data);
 
             $payload = json_encode(['message' => 'Archivo subido y procesado correctamente']);
